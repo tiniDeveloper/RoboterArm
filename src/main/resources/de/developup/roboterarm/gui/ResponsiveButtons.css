@@ -1,0 +1,16 @@
+
+.Buttons
+{
+    -fx-background-color : #1784aa;
+
+}
+
+.Buttons:hover
+{
+    -fx-background-color : rgb(29, 84, 133);
+}
+
+.Buttons:pressed
+{
+    -fx-background-color : #142d63;
+}
