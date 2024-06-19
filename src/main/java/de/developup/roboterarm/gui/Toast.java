@@ -10,8 +10,21 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
+
+/**
+ * Klasse zum ausgrauen der Benutzeroberfläche vor dem connecten zum Server
+ */
 public class Toast {
     private static Stage toastStage;
+
+    /**
+     * Zeigt eine Toast-Nachricht an.
+     *
+     * @param ownerStage die Benutzeroberfläche, die das Toast-Fenster besitzt.
+     * @param message die Nachricht, die im Toast angezeigt wird.
+     * @param buttonText der Text des Buttons im Toast.
+     * @param onToastButtonClick das Interface, das das drücken des Buttons behandelt.
+     */
     public static void showToast(Stage ownerStage, String message, String buttonText, OnToastButtonClick onToastButtonClick) {
         toastStage =new Stage();
         toastStage.initStyle(StageStyle.UNDECORATED);
@@ -38,8 +51,8 @@ public class Toast {
         scene.setFill(null);
         toastStage.setScene(scene);
 
-        toastStage.setWidth(ownerStage.getWidth()-9);
-        toastStage.setHeight(ownerStage.getHeight()-40);
+        toastStage.setWidth(ownerStage.getWidth()-14);
+        toastStage.setHeight(ownerStage.getHeight()-38);
         //toastStage.setX(ownerStage.getX()+40);
         //toastStage.setY(ownerStage.getY()+30);
 
@@ -56,10 +69,21 @@ public class Toast {
 
         fadeInTransition.play();
     }
+
+    /**
+     * Aktualisiert die Position des Toast-Fensters.
+     *
+     * @param ownerStage die Benutzeroberfläche, die das Toast-Fenster besitzt.
+     * @param toastStage das Toast-Fenster, dessen Position aktualisiert wird.
+     */
     private static void updateToastPosition(Stage ownerStage, Stage toastStage) {
         toastStage.setX(ownerStage.getX()+7);
-        toastStage.setY(ownerStage.getY()+40);
+        toastStage.setY(ownerStage.getY()+31);
     }
+
+    /**
+     * Funktionales Interface für die Behandlung des Knopf drücken im Toast-Fenster.
+     */
     @FunctionalInterface
     public interface OnToastButtonClick {
         boolean onClick();
