@@ -22,6 +22,10 @@ import java.util.function.UnaryOperator;
  * Verarbeitung von Ein- und Ausgabe der GUI
  */
 public class GUIController extends ISocketMessageListiner {
+    public void setClientHandler(ClientHandler clientHandler) {
+        this.clientHandler = clientHandler;
+    }
+
     ClientHandler clientHandler;
     @FXML
     HBox mHbox;
@@ -160,7 +164,7 @@ public class GUIController extends ISocketMessageListiner {
             xyCircle.setLayoutY(startY);
         });
 
-        Platform.runLater(() -> onConnecctionClosed("Please connect to the server!"));
+        //Platform.runLater(() -> onConnecctionClosed("Please connect to the server!"));
     }
 
     /**
@@ -207,8 +211,9 @@ public class GUIController extends ISocketMessageListiner {
      */
     @Override
     public void onConnecctionClosed(String reason) {
-        Stage stage = (Stage) rField.getScene().getWindow();
-        Toast.showToast(stage, reason, "Connect", this::onToastButtonClick);
+        System.out.println("Connection closed");
+        //Stage stage = (Stage) rField.getScene().getWindow();
+        //Toast.showToast(stage, reason, "Connect", this::onToastButtonClick);
     }
 
     /**
@@ -216,10 +221,10 @@ public class GUIController extends ISocketMessageListiner {
      *
      * @return true, wenn die Verbindung erfolgreich hergestellt wurde, andernfalls false
      */
-    private boolean onToastButtonClick() {
+    public boolean connect(String host, int port) {
         boolean istConnected=false;
         try {
-            clientHandler= new ClientHandler("gui21", 9988, this);
+            clientHandler= new ClientHandler(host, port, this);
             if(clientHandler.connected){
                 istConnected=true;
             }

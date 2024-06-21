@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<HBox fx:id="mHbox" alignment="CENTER" cache="true" fillHeight="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1278.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.developup.roboterarm.gui.InitController">
+   <children>
+      <AnchorPane prefHeight="720.0" prefWidth="1278.0">
+         <children>
+            <AnchorPane prefHeight="720.0" prefWidth="1278.0" />
+            <HBox prefHeight="720.0" prefWidth="1278.0">
+               <children>
+                  <VBox prefHeight="732.0" prefWidth="335.0">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </VBox>
+                  <AnchorPane fx:id="deviceListPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="706.0" prefWidth="748.0" style="-fx-background-color: #333333;">
+                     <children>
+                        <ListView fx:id="deviceListView" layoutX="238.0" layoutY="164.0" prefHeight="321.0" prefWidth="311.0" style="-fx-background-color: #4d4d4d;" />
+                        <Label layoutX="165.0" layoutY="91.0" prefHeight="53.0" prefWidth="457.0" text="Wählen Sie aus den erreichbaren Geräten ein aus:" textFill="#f2f2f2">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="connectButton" layoutX="338.0" layoutY="495.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="129.0" styleClass="Buttons" stylesheets="@ResponsiveButtons.css" text="connect" textFill="#fffefe" />
+                     </children>
+                     <HBox.margin>
+                        <Insets bottom="6.0" left="3.0" right="3.0" top="6.0" />
+                     </HBox.margin>
+                  </AnchorPane>
+                  <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="706.0" prefWidth="186.0" style="-fx-background-color: #333333;">
+                     <HBox.margin>
+                        <Insets bottom="6.0" left="3.0" right="6.0" top="6.0" />
+                     </HBox.margin>
+                  </AnchorPane>
+               </children>
+            </HBox>
+         </children>
+      </AnchorPane>
+   </children>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+</HBox>

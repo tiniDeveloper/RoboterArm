@@ -1,13 +1,12 @@
 package de.developup.roboterarm.gui;
 
+import de.developup.roboterarm.socket.ARPScanner;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-
-
+import java.io.*;
 /**
  *
  * Klasse zum Starten der Benutzeroberfläche für das Ansteuern des Roboterarmes
@@ -23,11 +22,15 @@ public class MainKlass extends Application  {
      */
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/de/developup/roboterarm/gui/GUIFenster.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 1280, 720);
-        stage.setTitle("Roboter Arm ClientSocketFX");
+        FXMLLoader initPaneloader = new FXMLLoader(getClass().getResource("/de/developup/roboterarm/gui/Init_Fanster.fxml"));
+        Scene InitScene = new Scene(initPaneloader.load(), 1280, 720);
+
+        FXMLLoader fxmlLoader  = new FXMLLoader(getClass().getResource("/de/developup/roboterarm/gui/GUIFenster.fxml"));
+        Scene guiScene   = new Scene(    fxmlLoader.load(), 1280, 720);
+
+        stage.setTitle("Roboter Arm Client");
         stage.setResizable(false);
-        stage.setScene(scene);
+        stage.setScene(InitScene);
         stage.show();
     }
 
@@ -39,5 +42,6 @@ public class MainKlass extends Application  {
     public static void main(String[] args) {
         launch();
     }
+
 
 }

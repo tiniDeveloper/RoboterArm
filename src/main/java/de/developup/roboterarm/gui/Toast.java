@@ -34,6 +34,8 @@ public class Toast {
 
         Label toastLabel = new Label(message);
         toastLabel.setStyle("-fx-background-radius: 20; -fx-background-color: rgba(0, 0, 0, 0.75); -fx-text-fill: white; -fx-padding: 10px;");
+        toastLabel.setLayoutX(500);
+        toastLabel.setLayoutY(200);
         toastLabel.setTextFill(Color.WHITE);
 
         Button toastButton = new Button(buttonText);
