@@ -3,15 +3,32 @@ import math
 import threading
 import RPi.GPIO as GPIO
 
-
+"""
+    Klasse zur Kontrolle und Einrichtung des Roboterarms
+"""
 class RobotArm:
+
+    """
+        Initialisierungsmethoden
+    """
     def __init__(self, motor1Pins, motor2Pins, motor3Pins, motor4Pins,magnetPin, listiner):
         self.joint1=Joint(pin_dir=motor1Pins[0], pin_step=motor1Pins[1], pin_en=motor1Pins[2], step=0, speed_end=35,listiner=listiner,jNum=1);
         self.joint2=Joint(pin_dir=motor2Pins[0], pin_step=motor2Pins[1], pin_en=motor2Pins[2], step=2048, speed_end=38,listiner=listiner,jNum=2);
         self.joint3=Joint(pin_dir=motor3Pins[0], pin_step=motor3Pins[1], pin_en=motor3Pins[2], step=2048, speed_end=38,listiner=listiner,jNum=3);
         self.joint4=Joint(pin_dir=motor4Pins[0], pin_step=motor4Pins[1], pin_en=motor4Pins[2], step=2048, speed_end=57,listiner=listiner,jNum=4);
         self.magnetPin=magnetPin
-   
+
+    """
+        Methode zur Berechnung der Inverse Kinematik aus Radius und Höhe.
+        
+        Args:
+        r: Angabe des Radius.
+        h: Angabe der Höhe.
+        
+        Returns:
+        array: Mit den 3 Winkeln der Achsen des Roboterarms.
+        
+    """
     def inversChen(self,r,h):
         link_2 = 90
         link_1 = 80
@@ -38,12 +55,27 @@ class RobotArm:
 
         joint2_degree = 180 - joint1_degree_alpha - joint3_degree_gamma
         return (joint1_degree, joint2_degree, joint3_degree)
-    
+
+    """
+        Methode zum Start der Bewegung einer Achse zum angegebenen Winkel.
+        
+        Args:
+        joint: Ausgewählte Achse.
+        angle: Der gewünschte Winkel.
+    """
     def moveToJoint(self, joint, angle):
         joint.setangle(angle)
         joint.enable(True)
         joint.start()
 
+    """
+        Methode zur Angabe der anzusteuernden Position des Roboterarms.
+        
+        Args:
+        phi: Der Wert für die anzusteuernde Drehung.
+        r: Die Angabe des gewünschten Radius.
+        h: Die gewünschte Höhe.
+    """
     def moveToPos(self, phi, r, h):
         print("moving")
         angles=self.inversChen(r,h)
@@ -63,7 +95,10 @@ class RobotArm:
         thread2.join()
         thread3.join()
         thread4.join()
-    
+
+    """
+        Methode zum zurückfahren in Grundeinstellung
+    """
     def goHome(self):
         self.magnetAktiv(0)
         thread1 = threading.Thread(target=self.moveToJoint, args=(self.joint1, 0))
@@ -81,6 +116,13 @@ class RobotArm:
         thread2.join()
         thread3.join()
         thread4.join()
+
+    """
+        Methode zum Ansteuern des Elektromagneten
+        
+        Args:
+        state: Einzustellender Zustand de Magneten.
+    """
     def magnetAktiv(self,state):
         GPIO.setup(self.magnetPin,GPIO.OUT)
         GPIO.output(self.magnetPin, state) 

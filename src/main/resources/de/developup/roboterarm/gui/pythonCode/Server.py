@@ -2,12 +2,23 @@ import socket
 import threading
 import time
 
-# Create a socket object
-        
+"""
+    Klasse zur Bereitstellung des Servers und Verwaltung eingehender Client-Verbindungen
+"""
 class ServerPrvider:
+
+    """
+        Initialisierungsmethoden
+    """
     def __init__(self, port):
         self.port=port
+
+    """
+        Methode zum Einrichten eines Clients und Starten eines neuen Threads für jeden verbundenen Client
         
+        Args:
+        listiner: Instanz des Nachricht-Listeners, der Nachrichten verarbeitet
+    """
     def clientEinrichten(self, listiner):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind(('', self.port))
@@ -22,11 +33,24 @@ class ServerPrvider:
                 print(f"Connected by {addr}")
    
         
-        
+"""
+    Klasse zur Verwaltung der Client-Verbindung und Kommunikation
+"""
 class InitClient:
     data=bytearray(9)
+
+    """
+        Initialisierungsmethoden
+    """
     def __init__(self, conn):
         self.conn= conn
+
+    """
+        Methode zum Starten der Client-Kommunikation.
+        
+        Args:
+        listiner: Listener welcher die Nachrichten verarbeitet
+    """
     def startCkient(self, listiner):
         counter=0
         while True:

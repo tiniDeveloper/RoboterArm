@@ -3,9 +3,13 @@ import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
 
-#For A4988 Stepper Driver
-#
+"""
+    Klasse zur Definition und Steuerung der Achsen
+"""
 class Joint:
+    """
+        Initialisierungsmethoden
+    """
     def __init__(self, pin_dir, pin_step, pin_en, step, speed_end,listiner,jNum):
         self.jNum=jNum
         self.listiner=listiner
@@ -32,19 +36,40 @@ class Joint:
         GPIO.setup(self.pin_en, GPIO.OUT)
         GPIO.output(self.pin_en, 1)
 
-    
+    """
+        Methode zum zurücksetzen des Stepcounter
+    """
     def setnull(self):
         self.step = 0;
-    
+
+    """
+        Methode zur Bestimmung des Aktuellen Winkels.
+        
+        Returns:
+        float: Der aktuelle Winkel des Motors in Grad.
+    """
     def getangle(self): #berechnen des aktuellen Winkels
         return ((360 / 4096) * self.step)
  
+    """
+        Methode zum Festlegen des anzustrebenen Winkels
+        
+        Args:
+        angle: Angabe des gewünschten Winkels
+    """
     def setangle(self, angle): #Winkel einstellen
         self.set_step = angle * (4096 / 360)
-        
+
+    """
+        Methode zur Rückgabe des angestrebten Winkels
+        float: Winkel welcher vom Nutzer angestrebt wurde.
+    """
     def getsetangle(self): #berechnen des angestrebten Winkels
         return round(((360 / 4096) * self.set_step),3)
     
+    """
+        Methode ...
+    """
     def setspeed(self, speed):
         if speed <= 100 and speed > 0:
             self.current_delay = 1 / ((speed / 100) * (1 / 0.0005))
