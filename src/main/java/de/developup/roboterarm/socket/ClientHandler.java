@@ -22,16 +22,12 @@ public class ClientHandler {
 	 * @throws IOException wenn ein Verbindungsfehler auftritt.
 	 */
 	public ClientHandler(String host,int port, ISocketMessageListiner listiner) throws IOException {
-        try {
-            this.clientSocket = new Socket(host,port);
+        this.clientSocket = new Socket(host,port);
 
-			if (clientSocket.isConnected()) {
-				this.connected = true;
-				System.out.println("ist verbunden");
-			}
-        } catch (IOException e) {
-           System.out.println(e.getMessage());
-        }
+		if (clientSocket.isConnected()) {
+			this.connected = true;
+			System.out.println("ist verbunden");
+		}
         this.listiner=listiner;
 	}
 
@@ -65,5 +61,8 @@ public class ClientHandler {
 				listiner.onConnecctionClosed(e1.getMessage());
 			}
 		}
+	}
+	public void closeConnection() throws IOException {
+		this.clientSocket.close();
 	}
 }

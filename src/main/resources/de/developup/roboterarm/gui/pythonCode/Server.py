@@ -33,6 +33,16 @@ class InitClient:
             counter=counter+1
             data = self.conn.recv(9)
             if not data:
-                continue
+                x=bytearray(2)
+                y=0x08
+                x[0]=y
+                listiner.onMessage(x)
+                break
             data = listiner.onMessage(data)
             self.conn.sendall(data)
+            
+            
+            
+            
+
+

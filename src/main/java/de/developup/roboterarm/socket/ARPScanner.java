@@ -30,7 +30,8 @@ public class ARPScanner {
 
             while ((line = reader.readLine()) != null) {
                 // Analysieren und verarbeiten Sie die Ausgabezeilen
-                if (/*line.contains("dynamisch")||line.contains("dynamic")*/true) {
+                System.out.println(line);
+                if (line.contains("dynamisch")||line.contains("dynamic")) {
                     for (String s : strPattern) {
                         Pattern pattern = Pattern.compile(s);
                         // Extracting all Patterns from the string

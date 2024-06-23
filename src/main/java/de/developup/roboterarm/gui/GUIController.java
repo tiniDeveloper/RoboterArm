@@ -6,6 +6,9 @@ import de.developup.roboterarm.socket.ISocketMessageListiner;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -62,6 +65,10 @@ public class GUIController extends ISocketMessageListiner {
     private Button bGoHome;
     @FXML
     private Button bMoveTo;
+    @FXML
+    private Button bDisconnect;
+    @FXML
+    private Button bPigPlace;
 
     /**
      * Konstruktor für die GUIController-Klasse.
@@ -164,6 +171,31 @@ public class GUIController extends ISocketMessageListiner {
             xyCircle.setLayoutY(startY);
         });
 
+        bDisconnect.setOnMouseClicked(event -> {
+            //data[0]= (byte) 0x08;
+            //clientHandler.sendAndWaitForResponse(data);
+            try {
+                clientHandler.closeConnection();
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+
+            FXMLLoader initPaneloader = new FXMLLoader(getClass().getResource("/de/developup/roboterarm/gui/Init_Fanster.fxml"));
+            try {
+                Scene InitScene = new Scene(initPaneloader.load(), 1280, 720);
+                Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
+
+                primaryStage.setScene(InitScene);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        bPigPlace.setOnMouseClicked(mouseEvent -> {
+            data[0]=(byte) 0x07;
+            clientHandler.sendAndWaitForResponse(data);
+        });
+
         //Platform.runLater(() -> onConnecctionClosed("Please connect to the server!"));
     }
 
@@ -176,7 +208,7 @@ public class GUIController extends ISocketMessageListiner {
     public void onByteMessage(byte[] incommengByteArray) {
         switch (incommengByteArray[0]){
             case 0x10:// ist gestoppt
-                System.out.println("ist gestoppt"+ incommengByteArray[0]);
+                System.out.println(" ist gemacht"+ incommengByteArray[0]);
                 // daten anzeigen
                 break;
             case 0x11:// aktuelle Daten empfangen
@@ -202,6 +234,8 @@ public class GUIController extends ISocketMessageListiner {
                 System.out.println("Unknown Byte Message"+ incommengByteArray[0]);
                 break;
         }
+
+
     }
 
     /**
@@ -221,18 +255,19 @@ public class GUIController extends ISocketMessageListiner {
      *
      * @return true, wenn die Verbindung erfolgreich hergestellt wurde, andernfalls false
      */
-    public boolean connect(String host, int port) {
-        boolean istConnected=false;
+    public String connect(String host, int port) {
+        String message ="";
         try {
             clientHandler= new ClientHandler(host, port, this);
+            System.out.println("hallo");
             if(clientHandler.connected){
-                istConnected=true;
+                message="OK";
             }
 
         }catch (IOException e){
-            System.out.println(e.getMessage());
+            message=e.getMessage();
         }
-        return istConnected;
+        return message;
     }
 
 }

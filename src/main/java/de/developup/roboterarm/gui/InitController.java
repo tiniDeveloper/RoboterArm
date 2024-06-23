@@ -6,10 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.stage.Stage;
@@ -25,15 +22,16 @@ public class InitController {
     ListView <Label> deviceListView;
     @FXML
     Button connectButton;
+
+    @FXML
+    TextArea statusArea;
+
     String gewaehleHost;
 
 
     public void initialize() {
-
-
         deviceListView.setOnMouseClicked(event -> {
             Label selectedItem = deviceListView.getSelectionModel().getSelectedItem();
-
             if (selectedItem != null) {
                 // Hier können Sie definieren, was passieren soll, wenn ein Element angeklickt wird
                 gewaehleHost=selectedItem.getText();
@@ -62,14 +60,17 @@ public class InitController {
 
                 Scene guiScene = new Scene(    fxmlLoader.load(), 1280, 720);
                 GUIController guiController = fxmlLoader.getController();
-                if(guiController.connect(gewaehleHost,9988)){
+                String connectionnMessage=guiController.connect(gewaehleHost,9988);
+                if(connectionnMessage.equals("OK")){
                     Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
 
                     primaryStage.setScene(guiScene);
+                }else {
+                    statusArea.setText(connectionnMessage);
                 }
 
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.out.println(e.getMessage());
             }
 
         });
@@ -79,9 +80,8 @@ public class InitController {
     private void filltheList() {
         ArrayList<ArrayList<String>> devices= ARPScanner.showDevices();
         for (ArrayList device : devices) {
-            System.out.println(device.get(0));
             Label l= new Label();
-            l.setText(device.get(1).toString());
+            l.setText(device.get(0).toString());
             deviceListView.getItems().add(l);
         }
     }

@@ -5,7 +5,7 @@ import threading
 from RoboterArm import RobotArm
 import math
 import RPi.GPIO as GPIO
-
+i=-1
 #Elektromagnet
 def magnetAktiv(pin,state):
     GPIO.setup(pin,GPIO.OUT)
@@ -23,7 +23,7 @@ class MyMessageHandler(ISocketMessageListener):
         dataToSend=bytearray(9)
         
         print(data[0])
-        if data[0]==0x00:# Vorgang stoppen
+        if data[0]==0x03:# Vorgang stoppen
             self.stoppVorgang=True
             print("befehl")
             # stoppen
@@ -39,32 +39,53 @@ class MyMessageHandler(ISocketMessageListener):
         elif data[0]==0x02:
             #bewege zum Punkt
             print("Befehl: bewegen")
-            koo=self.getData(data)
+            (phi,r,h)=self.getData(data)
             dataToSend[1]=22
             dataToSend[2]=55
             dataToSend[3]=44
             dataToSend[4]=22
-            print(koo[1])
-            
-            print(koo[2])
-            print(koo[3])
+            print (phi)
+            print(r)
+            print(h)
             robotArm.moveToPos(koo[3],koo[1],koo[2])
             #magnetAktiv(25,1)
             return self.setData(0x12,dataToSend)
-            #angles=inversChen(koo[1],[2])
         elif data[0]==0x05:
-            print("befehl")
+            print("Joistic")
             # Joistickmodus
-            
+
+        elif data[0]==0x07:# Pig and place
+            print("Pig and Place")
+            global i
+            i=2
+            dataToSend[1]=self.currentAngles[1]
+            dataToSend[2]=self.currentAngles[2]
+            dataToSend[3]=self.currentAngles[3]
+            dataToSend[4]=self.currentAngles[4]
+            return self.setData(0x12,dataToSend)
+
+        elif data[0]==0x08:# Hier disconnecten
+            print("disconnect")
+            #robotArm.goHome();
+            dataToSend[1]=self.currentAngles[1]
+            dataToSend[2]=self.currentAngles[2]
+            dataToSend[3]=self.currentAngles[3]
+            dataToSend[4]=self.currentAngles[4]
+            #return self.setData(0x12,dataToSend)
         elif data[0]==0x09:# startet
-            print("befehl")
+            print("start")
             robotArm.goHome();
+            dataToSend[1]=self.currentAngles[1]
+            dataToSend[2]=self.currentAngles[2]
+            dataToSend[3]=self.currentAngles[3]
+            dataToSend[4]=self.currentAngles[4]
             return self.setData(0x12,dataToSend)
         else:
             print("Unknown Byte Message "+str(data[0]))
 
     def setData(self,befehl, data):
         dataToSend=bytearray(9)
+            
         dataToSend[0]=befehl
             
         dataToSend[1]=( data[1] & 0xFF)# r-Werte
@@ -78,15 +99,26 @@ class MyMessageHandler(ISocketMessageListener):
                            
         dataToSend[7]=( data[4] & 0xFF)
         dataToSend[8]=((data[4] >> 8)&0xFF)
-        return dataToSend
+        return dataToSend 
     def getData(self, data):
-        incomeningData=bytearray(5)
-        incomeningData[0]=0x11
-        incomeningData[1]=(data[1]&0xff)+((data[2]&0xff)<<8)
-        incomeningData[2]=(data[3]&0xff)+((data[4]&0xff)<<8)
-        incomeningData[3]=(data[5]&0xff)+((data[6]&0xff)<<8)
-        incomeningData[4]=(data[7]&0xff)+((data[8]&0xff)<<8)
-        return incomeningData
+        phi=0
+        r=0
+        h=0
+        if (data[1]&0xff)+((data[2]&0xff)<<8)> 32767:
+            phi= (data[1]&0xff)+((data[2]&0xff)<<8)-65536
+        else:
+            hpi=(data[1]&0xff)+((data[2]&0xff)<<8)
+        
+        if (data[3]&0xff)+((data[4]&0xff)<<8)> 32767:
+            r= (data[3]&0xff)+((data[4]&0xff)<<8)-65536
+        else:
+            r=(data[3]&0xff)+((data[4]&0xff)<<8)
+            
+        if (data[5]&0xff)+((data[6]&0xff)<<8)> 32767:
+            h= (data[5]&0xff)+((data[6]&0xff)<<8)-65536
+        else:
+            r=(data[5]&0xff)+((data[6]&0xff)<<8)
+        return (phi, r,h)#incomeningData
     def setAngles(self,angle, jNum):
         nangle=int(angle)
         self.currentAngles[jNum]=(nangle & 0xFF)# r-Werte
@@ -122,45 +154,46 @@ def main():
 
     # Initialisierung des Roboterarms mit den Motoren
     #robotArm = RobotArm(motor1Pins, motor2Pins, motor3Pins,motor4Pins) 
-    i=0
+    global i
 
     while True:
         time.sleep(0.5)
         
 #Pick and Place Demo
-#         if(i<2):
-#             robotArm.moveToPos(20,140,4)
-#             magnetAktiv(25,1)
-#             time.sleep(0.5)
-#             
-#             robotArm.moveToPos(20,140,100)
-#             
-#             robotArm.moveToPos(-30,100,100)
-#             robotArm.moveToPos(-30,100,0)
-#             magnetAktiv(25,0)
-#             time.sleep(0.5)
-#             
-#             robotArm.moveToPos(-30,100,100)
-#             robotArm.moveToPos(-30,100,0)
-#             magnetAktiv(25,1)
-#             time.sleep(0.5)
-#             
-#             robotArm.moveToPos(-30,100,100)
-#             
-#             robotArm.moveToPos(20,140,100)
-#             
-#             robotArm.moveToPos(20,140,4)
-#             magnetAktiv(25,0)
-#             time.sleep(0.5)
-#             
-#             robotArm.moveToPos(20,140,100)
-#             magnetAktiv(25,0)
-#             i+=1
+        if(i>0):
+            robotArm.moveToPos(20,140,4)
+            magnetAktiv(25,1)
+            time.sleep(0.5)
+            
+            robotArm.moveToPos(20,140,100)
+            
+            robotArm.moveToPos(-30,100,100)
+            robotArm.moveToPos(-30,100,0)
+            magnetAktiv(25,0)
+            time.sleep(0.5)
+            
+            robotArm.moveToPos(-30,100,100)
+            robotArm.moveToPos(-30,100,0)
+            magnetAktiv(25,1)
+            time.sleep(0.5)
+            
+            robotArm.moveToPos(-30,100,100)
+            
+            robotArm.moveToPos(20,140,100)
+            
+            robotArm.moveToPos(20,140,4)
+            magnetAktiv(25,0)
+            time.sleep(0.5)
+            
+            robotArm.moveToPos(20,140,100)
+            magnetAktiv(25,0)
+            i-=1
 #
-#         elif(i==2):
-#             i+=1
-#             robotArm.goHome()
-#             GPIO.cleanup()
+        elif(i==0):
+            i=-1
+            robotArm.goHome()
+            GPIO.output(22, 1)# deaktiviere die Motoren
+            GPIO.cleanup()
             
     
         
