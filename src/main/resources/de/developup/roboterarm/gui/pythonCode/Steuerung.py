@@ -4,7 +4,7 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 
 """
-    Klasse zur Definition und Steuerung der Achsen
+    Klasse zur Definition und Steuerung der Achsen.
 """
 class Joint:
     """
@@ -62,13 +62,18 @@ class Joint:
 
     """
         Methode zur Rückgabe des angestrebten Winkels
+        
+        Returns:
         float: Winkel welcher vom Nutzer angestrebt wurde.
     """
     def getsetangle(self): #berechnen des angestrebten Winkels
         return round(((360 / 4096) * self.set_step),3)
     
     """
-        Methode ...
+        Methode zur Einstellung der Achsengeschwindigkeit in Prozent.
+        
+        Args:
+        speed: Geschwindigkeit in Prozent.
     """
     def setspeed(self, speed):
         if speed <= 100 and speed > 0:
@@ -77,13 +82,28 @@ class Joint:
         else:
             self.current_delay = 1 / ((20 / 100) * (1 / 0.0005))
             self.speed_end = 20    
-    
+
+    """
+        Methode zum aktivieren / deaktivieren der Achsen
+        
+        Args:
+        enable: Status der Achse (True: aktiv, False: inaktiv)
+    """
     def enable(self,enable):
         if enable == True:
             GPIO.output(self.pin_en, 0)
         else:
             GPIO.output(self.pin_en, 1)
-    
+    """
+        Methode zur Bestimmung der Beschleunigungskurve.
+        
+        Args:
+        end_step: Schritte bis wann die maximale Geschwindigkeit erreicht werden soll. 
+        current_step: Anzahl der bisherigen schritte.
+        
+        Returns:
+        float: Durch die Kurve festgelegte Geschwindigkeit bzw. Endgeschwindigkeit.
+    """
     def curve(self, end_step, current_step):
             if current_step < end_step:
                 current_speed = ((self.speed_end-self.speed_end/2)/end_step)*current_step+(self.speed_end/5)
@@ -91,7 +111,9 @@ class Joint:
             else:
                 return self.speed_end
         
-    
+    """
+        Methode zum starten der Achsenbewegung. 
+    """
     def start(self):
         step_relativ = 0
         
