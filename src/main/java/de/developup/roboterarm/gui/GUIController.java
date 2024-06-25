@@ -25,6 +25,7 @@ import java.util.function.UnaryOperator;
 public class GUIController extends ISocketMessageListiner {
 
     private ClientHandler clientHandler;
+    private boolean doorOpen;
     @FXML
     HBox mHbox;
     byte[] data;
@@ -102,6 +103,7 @@ public class GUIController extends ISocketMessageListiner {
                 data[4]= (byte) ((h>>8)&0xff);
                 data[5]= (byte) (phi&0xff);
                 data[6]= (byte) ((phi>>8)&0xff);
+                clientHandler.sendAndWaitForResponse(data);
             }
         } catch (InvalidParameterException e) {
             statusArea.setText(e.getMessage()+statusArea.getText());
@@ -111,7 +113,7 @@ public class GUIController extends ISocketMessageListiner {
         }
 
 
-        clientHandler.sendAndWaitForResponse(data);
+
 //        int reconstructed = (data[1]&0xff)+((data[2]&0xff)<<8);
 //        if (reconstructed > 32767) {
 //            reconstructed -= 65536; // Subtract 2^16 to get the correct negative value
@@ -187,8 +189,10 @@ public class GUIController extends ISocketMessageListiner {
 
     @FXML
     void bPickPlaceOnClick() {
+        doorOpen=false;
         data[0]=(byte) 0x07;
         clientHandler.sendAndWaitForResponse(data);
+        doorOpen=true;
     }
 
 
@@ -202,7 +206,7 @@ public class GUIController extends ISocketMessageListiner {
 
         FXMLLoader initPaneloader = new FXMLLoader(getClass().getResource("/de/developup/roboterarm/gui/Init_Fanster.fxml"));
         try {
-            Scene InitScene = new Scene(initPaneloader.load(), 1280, 720);
+            Scene InitScene = new Scene(initPaneloader.load(), 732, 720);
             Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
 
             primaryStage.setScene(InitScene);
@@ -224,6 +228,7 @@ public class GUIController extends ISocketMessageListiner {
                 // daten anzeigen
                 break;
             case 0x11:// aktuelle Daten empfangen
+                System.out.println("aktuelle daten empfangen");
                 lJoint1.setText(String.valueOf((incommengByteArray[1]&0xff)+((incommengByteArray[2]&0xff)<<8)));
                 lJoint2.setText(String.valueOf((incommengByteArray[3]&0xff)+((incommengByteArray[4]&0xff)<<8)));
                 lJoint3.setText(String.valueOf((incommengByteArray[5]&0xff)+((incommengByteArray[6]&0xff)<<8)));
@@ -277,5 +282,6 @@ public class GUIController extends ISocketMessageListiner {
         }
         return message;
     }
+
 
 }

@@ -6,8 +6,9 @@ import RPi.GPIO as GPIO
 """
     Klasse zur Kontrolle und Einrichtung des Roboterarms
 """
-class RobotArm:
 
+class RobotArm:
+    
     """
         Initialisierungsmethoden
     """
@@ -17,7 +18,6 @@ class RobotArm:
         self.joint3=Joint(pin_dir=motor3Pins[0], pin_step=motor3Pins[1], pin_en=motor3Pins[2], step=2048, speed_end=38,listiner=listiner,jNum=3);
         self.joint4=Joint(pin_dir=motor4Pins[0], pin_step=motor4Pins[1], pin_en=motor4Pins[2], step=2048, speed_end=57,listiner=listiner,jNum=4);
         self.magnetPin=magnetPin
-
     """
         Methode zur Berechnung der Inverse Kinematik aus Radius und Höhe.
         
@@ -30,47 +30,32 @@ class RobotArm:
         
     """
     def inversChen(self,r,h):
-        try:
-            link_2 = 90
-            link_1 = 80
-            magnet_offset= 65-34 #link3=65
-            if r <= 0 or h <= 0:
-                raise ValueError("Die Werte für 'r' und 'h' müssen positiv sein.")
+        link_2 = 90
+        link_1 = 80
+        magnet_offset= 65-34 #link3=65
+        hypotenuse = math.sqrt(r**2 + (h - magnet_offset)**2)
+        delta_rad = math.asin((h - magnet_offset) / hypotenuse)
+        delta_degree = math.degrees(delta_rad)
+        epsilon = math.asin(r / hypotenuse)
 
-            hypotenuse = math.sqrt(r**2 + (h - magnet_offset)**2)
-            if hypotenuse == 0:
-                raise ValueError("Die Hypotenuse darf nicht Null sein.")
-            delta_rad = math.asin((h - magnet_offset) / hypotenuse)
-            delta_degree = math.degrees(delta_rad)
-            epsilon = math.asin(r / hypotenuse)
+        joint1_rad_alpha = math.acos((link_2**2 - link_1**2 - hypotenuse**2) / (-2 * link_1 * hypotenuse))
+        joint1_rad = joint1_rad_alpha + delta_rad
 
-            joint1_rad_alpha = math.acos((link_2**2 - link_1**2 - hypotenuse**2) / (-2 * link_1 * hypotenuse))
-            joint1_rad = joint1_rad_alpha + delta_rad
+        joint1_degree_alpha = math.degrees(joint1_rad_alpha)
+        joint1_degree = math.degrees(joint1_rad)
 
-            joint1_degree_alpha = math.degrees(joint1_rad_alpha)
-            joint1_degree = math.degrees(joint1_rad)
+        joint3_rad_gamma = math.acos((link_1**2 - link_2**2 - hypotenuse**2) / (-2 * link_2 * hypotenuse))
+        joint3_degree_gamma = math.degrees(joint3_rad_gamma)
 
-            joint3_rad_gamma = math.acos((link_1**2 - link_2**2 - hypotenuse**2) / (-2 * link_2 * hypotenuse))
-            joint3_degree_gamma = math.degrees(joint3_rad_gamma)
+        if h < magnet_offset:
+            joint3_degree = joint3_degree_gamma + 90 - delta_degree
+        else:
+            joint3_rad = joint3_rad_gamma + epsilon
+            joint3_degree = math.degrees(joint3_rad)
 
-            if h < magnet_offset:
-                joint3_degree = joint3_degree_gamma + 90 - delta_degree
-            else:
-                joint3_rad = joint3_rad_gamma + epsilon
-                joint3_degree = math.degrees(joint3_rad)
-
-            joint2_degree = 180 - joint1_degree_alpha - joint3_degree_gamma
-            return (joint1_degree, joint2_degree, joint3_degree)
-        except ValueError as e:
-            print(f"ValueError: {e}")
-            return None
-        except ZeroDivisionError:
-            print("Fehler: Division durch Null aufgetreten.")
-            return None
-        except Exception as e:
-            print(f"Ein unerwarteter Fehler ist aufgetreten: {e}")
-            return None
-
+        joint2_degree = 180 - joint1_degree_alpha - joint3_degree_gamma
+        return (joint1_degree, joint2_degree, joint3_degree)
+    
     """
         Methode zum Start der Bewegung einer Achse zum angegebenen Winkel.
         
@@ -82,7 +67,6 @@ class RobotArm:
         joint.setangle(angle)
         joint.enable(True)
         joint.start()
-
     """
         Methode zur Angabe der anzusteuernden Position des Roboterarms.
         
@@ -110,11 +94,11 @@ class RobotArm:
         thread2.join()
         thread3.join()
         thread4.join()
-
     """
         Methode zum zurückfahren in Grundeinstellung
     """
     def goHome(self):
+        print("Homing")
         self.magnetAktiv(0)
         thread1 = threading.Thread(target=self.moveToJoint, args=(self.joint1, 0))
         thread2 = threading.Thread(target=self.moveToJoint, args=(self.joint2, 180))
@@ -131,7 +115,7 @@ class RobotArm:
         thread2.join()
         thread3.join()
         thread4.join()
-
+    
     """
         Methode zum Ansteuern des Elektromagneten
         

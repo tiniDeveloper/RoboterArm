@@ -32,7 +32,7 @@ public class InitController {
      *
      */
     public void initialize() {
-        connectButton.setVisible(false);
+        //connectButton.setVisible(false);
         deviceListView.setOnMouseClicked(event -> {
             Label selectedItem = deviceListView.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
@@ -61,10 +61,9 @@ public class InitController {
         try {
             Scene guiScene = new Scene(    fxmlLoader.load(), 1280, 720);
             GUIController guiController = fxmlLoader.getController();
-            String connectionnMessage=guiController.connect(gewaehleHost,9988);
+            String connectionnMessage=guiController.connect(/*gewaehleHost*/"172.20.10.2",9988);
             if(connectionnMessage.equals("OK")){
                 Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
-
                 primaryStage.setScene(guiScene);
             }else {
                 statusArea.setText(connectionnMessage+"\n"+statusArea.getText());

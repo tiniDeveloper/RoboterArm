@@ -5,14 +5,13 @@ import time
 """
     Klasse zur Bereitstellung des Servers und Verwaltung eingehender Client-Verbindungen
 """
+        
 class ServerPrvider:
-
     """
         Initialisierungsmethoden
     """
     def __init__(self, port):
         self.port=port
-
     """
         Methode zum Einrichten eines Clients und Starten eines neuen Threads für jeden verbundenen Client
         
@@ -35,16 +34,14 @@ class ServerPrvider:
         
 """
     Klasse zur Verwaltung der Client-Verbindung und Kommunikation
-"""
+"""      
 class InitClient:
     data=bytearray(9)
-
     """
         Initialisierungsmethoden
     """
     def __init__(self, conn):
         self.conn= conn
-
     """
         Methode zum Starten der Client-Kommunikation.
         
@@ -65,8 +62,3 @@ class InitClient:
             data = listiner.onMessage(data)
             self.conn.sendall(data)
             
-            
-            
-            
-
-
