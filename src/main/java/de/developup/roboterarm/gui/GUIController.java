@@ -15,7 +15,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.function.UnaryOperator;
 
 /**
@@ -229,10 +231,15 @@ public class GUIController extends ISocketMessageListiner {
                 break;
             case 0x11:// aktuelle Daten empfangen
                 System.out.println("aktuelle daten empfangen");
-                lJoint1.setText(String.valueOf((incommengByteArray[1]&0xff)+((incommengByteArray[2]&0xff)<<8)));
-                lJoint2.setText(String.valueOf((incommengByteArray[3]&0xff)+((incommengByteArray[4]&0xff)<<8)));
-                lJoint3.setText(String.valueOf((incommengByteArray[5]&0xff)+((incommengByteArray[6]&0xff)<<8)));
-                lRotation.setText(String.valueOf((incommengByteArray[7]&0xff)+((incommengByteArray[8]&0xff)<<8)));
+                int[]x=bytesToInt(incommengByteArray);
+                lJoint1.setText(String.valueOf(x[0]));
+                lJoint2.setText(String.valueOf(x[1]));
+                lJoint3.setText(String.valueOf(x[2]));
+                lRotation.setText(String.valueOf(x[3]));
+//                lJoint1.setText(String.valueOf((incommengByteArray[1]&0xff)+((incommengByteArray[2]&0xff)<<8)));
+//                lJoint2.setText(String.valueOf((incommengByteArray[3]&0xff)+((incommengByteArray[4]&0xff)<<8)));
+//                lJoint3.setText(String.valueOf((incommengByteArray[5]&0xff)+((incommengByteArray[6]&0xff)<<8)));
+//                lRotation.setText(String.valueOf((incommengByteArray[7]&0xff)+((incommengByteArray[8]&0xff)<<8)));
                 // daten anzeigen
                 break;
             case 0x12:// nachricht melden
@@ -281,6 +288,32 @@ public class GUIController extends ISocketMessageListiner {
             message=e.getMessage();
         }
         return message;
+    }
+
+    int[] bytesToInt(byte[] incommmingData){
+        int[] x= new int[4];
+        if(((incommmingData[1]&0xff)+((incommmingData[2]&0xff)<<8)>32767))
+            x[0]=((incommmingData[1]&0xff)+((incommmingData[2]&0xff)<<8)-65536);
+        else
+            x[0]=(incommmingData[1]&0xff)+((incommmingData[2]&0xff)<<8);
+
+        if(((incommmingData[3]&0xff)+((incommmingData[4]&0xff)<<8)>32767))
+            x[1]=((incommmingData[3]&0xff)+((incommmingData[4]&0xff)<<8)-65536);
+        else
+            x[1]=(incommmingData[3]&0xff)+((incommmingData[4]&0xff)<<8);
+
+        if(((incommmingData[5]&0xff)+((incommmingData[6]&0xff)<<8)>32767))
+            x[2]=((incommmingData[5]&0xff)+((incommmingData[6]&0xff)<<8)-65536);
+        else
+            x[2]=(incommmingData[5]&0xff)+((incommmingData[6]&0xff)<<8);
+
+        if(((incommmingData[7]&0xff)+((incommmingData[8]&0xff)<<8)>32767))
+            x[3]=((incommmingData[7]&0xff)+((incommmingData[8]&0xff)<<8)-65536);
+        else
+            x[3]=(incommmingData[7]&0xff)+((incommmingData[8]&0xff)<<8);
+
+
+        return x;
     }
 
 

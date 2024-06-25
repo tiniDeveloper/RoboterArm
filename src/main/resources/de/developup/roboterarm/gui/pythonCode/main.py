@@ -16,7 +16,7 @@ class MyMessageHandler(ISocketMessageListener):
     """
     def __init__(self):
         self.stoppVorgang=False
-        self.currentAngles=bytearray(9)
+        self.currentAngles=[0] * 5
         global robotArm
         
     """
@@ -61,7 +61,7 @@ class MyMessageHandler(ISocketMessageListener):
             print(h)
             robotArm.moveToPos(phi,r,h)
             
-            return self.setData(0x11,dataToSend)
+            return self.setData(0x11,self.currentAngles)
         elif data[0]==0x05:
             print("Joistic")
 
