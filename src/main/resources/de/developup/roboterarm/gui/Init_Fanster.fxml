@@ -7,53 +7,49 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox fx:id="mHbox" alignment="CENTER" cache="true" fillHeight="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1278.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.developup.roboterarm.gui.InitController">
+<HBox fx:id="mHbox" alignment="CENTER" cache="true" fillHeight="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="732.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.developup.roboterarm.gui.InitController">
    <children>
-      <AnchorPane prefHeight="720.0" prefWidth="1278.0">
+      <AnchorPane prefHeight="720.0" prefWidth="720.0">
          <children>
-            <AnchorPane prefHeight="720.0" prefWidth="1278.0" />
-            <HBox prefHeight="720.0" prefWidth="1278.0">
+            <VBox prefHeight="720.0" prefWidth="720.0">
                <children>
-                  <AnchorPane prefHeight="720.0" prefWidth="338.0" style="-fx-background-color: #333333;">
-                     <HBox.margin>
-                        <Insets bottom="6.0" left="6.0" right="3.0" top="6.0" />
-                     </HBox.margin>
+                  <AnchorPane fx:id="deviceListPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="467.0" prefWidth="720.0" style="-fx-background-color: #333333;">
                      <children>
-                        <Label layoutX="128.0" layoutY="64.0" prefHeight="39.0" prefWidth="74.0" text="Status" textFill="WHITE">
+                        <ListView fx:id="deviceListView" layoutX="204.0" layoutY="74.0" prefHeight="321.0" prefWidth="311.0" style="-fx-background-color: #4d4d4d;" AnchorPane.leftAnchor="204.0" AnchorPane.rightAnchor="205.0" />
+                        <Label layoutX="258.0" layoutY="21.0" prefHeight="53.0" prefWidth="204.0" text="SocketServer-Auswahl:" textFill="#f2f2f2" AnchorPane.leftAnchor="258.0" AnchorPane.rightAnchor="258.0">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="connectButton" layoutX="386.0" layoutY="411.0" mnemonicParsing="false" onAction="#onConnectButtonClicked" prefHeight="38.0" prefWidth="129.0" styleClass="Buttons" stylesheets="@ResponsiveButtons.css" text="connect" textFill="#fffefe" />
+                        <Button fx:id="bRefresh" layoutX="204.0" layoutY="411.0" mnemonicParsing="false" onAction="#onRefreshButtonClicked" prefHeight="38.0" prefWidth="129.0" styleClass="Buttons" stylesheets="@ResponsiveButtons.css" text="Refresh" textFill="#fffefe" />
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="3.0" left="6.0" right="6.0" top="6.0" />
+                     </VBox.margin>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="248.0" prefWidth="720.0" style="-fx-background-color: #333333;">
+                     <children>
+                        <Label layoutX="323.0" prefHeight="39.0" prefWidth="74.0" text="Status" textFill="WHITE">
                            <font>
                               <Font size="27.0" />
                            </font>
                         </Label>
-                        <TextArea fx:id="statusArea" layoutX="9.0" layoutY="114.0" prefHeight="396.0" prefWidth="304.0" style="-fx-background-color: #4d4d4d; -fx-control-inner-background: #4d4d4d;">
+                        <TextArea fx:id="statusArea" layoutX="118.0" layoutY="46.0" prefHeight="180.0" prefWidth="485.0" style="-fx-background-color: #4d4d4d; -fx-control-inner-background: #4d4d4d;" wrapText="true" AnchorPane.leftAnchor="118.0" AnchorPane.rightAnchor="117.0">
                            <opaqueInsets>
                               <Insets bottom="5.0" right="3.0" top="6.0" />
                            </opaqueInsets>
                         </TextArea>
                      </children>
-                  </AnchorPane>
-                  <AnchorPane fx:id="deviceListPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="706.0" prefWidth="748.0" style="-fx-background-color: #333333;">
-                     <children>
-                        <ListView fx:id="deviceListView" layoutX="238.0" layoutY="164.0" prefHeight="321.0" prefWidth="311.0" style="-fx-background-color: #4d4d4d;" />
-                        <Label layoutX="301.0" layoutY="93.0" prefHeight="53.0" prefWidth="204.0" text="SocketServer-Auswahl:" textFill="#f2f2f2">
-                           <font>
-                              <Font size="20.0" />
-                           </font>
-                        </Label>
-                        <Button fx:id="connectButton" layoutX="338.0" layoutY="495.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="129.0" styleClass="Buttons" stylesheets="@ResponsiveButtons.css" text="connect" textFill="#fffefe" />
-                     </children>
-                     <HBox.margin>
-                        <Insets bottom="6.0" left="3.0" right="3.0" top="6.0" />
-                     </HBox.margin>
-                  </AnchorPane>
-                  <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="706.0" prefWidth="186.0" style="-fx-background-color: #333333;">
-                     <HBox.margin>
-                        <Insets bottom="6.0" left="3.0" right="6.0" top="6.0" />
-                     </HBox.margin>
+                     <VBox.margin>
+                        <Insets bottom="6.0" left="6.0" right="6.0" top="3.0" />
+                     </VBox.margin>
                   </AnchorPane>
                </children>
-            </HBox>
+            </VBox>
          </children>
       </AnchorPane>
    </children>

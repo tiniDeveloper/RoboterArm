@@ -15,7 +15,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<HBox fx:id="mHbox" alignment="CENTER" cache="true" fillHeight="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1278.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.developup.roboterarm.gui.GUIController">
+<HBox fx:id="mHbox" alignment="CENTER" cache="true" fillHeight="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1278.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.developup.roboterarm.gui.GUIController">
    <children>
       <AnchorPane prefHeight="720.0" prefWidth="1278.0">
          <children>
@@ -26,7 +26,7 @@
                      <children>
                         <AnchorPane prefHeight="272.0" prefWidth="350.0" style="-fx-background-color: #333333;">
                            <children>
-                              <TextArea editable="false" layoutX="13.0" layoutY="40.0" prefHeight="233.0" prefWidth="286.0" style="-fx-control-inner-background: #4d4d4d; -fx-background-color: #4a4a4a;" text="Error Messages, Statusinformationen etc." AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="44.0">
+                              <TextArea fx:id="statusArea" editable="false" layoutX="13.0" layoutY="40.0" prefHeight="233.0" prefWidth="286.0" style="-fx-control-inner-background: #4d4d4d; -fx-background-color: #4a4a4a;" wrapText="true" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="44.0">
                                  <font>
                                     <Font name="Arial" size="12.0" />
                                  </font>
@@ -106,8 +106,8 @@
                         <Circle fill="#4d4d4d" layoutX="335.0" layoutY="191.0" radius="40.0" stroke="#808080" strokeType="INSIDE" strokeWidth="4.0" />
                         <Rectangle arcHeight="25.0" arcWidth="25.0" fill="#1b1b1b" height="57.0" layoutX="5.0" layoutY="6.0" stroke="BLACK" strokeType="INSIDE" width="736.0" />
                         <Button fx:id="bGoHome" layoutX="100.0" layoutY="15.0" mnemonicParsing="false" onAction="#bGoHomeOnClick" prefHeight="38.0" prefWidth="129.0" styleClass="Buttons" stylesheets="@ResponsiveButtons.css" text="go Home" textFill="#fffefe" />
-                        <Button fx:id="bDisconnect" layoutX="314.0" layoutY="15.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="129.0" styleClass="Buttons" stylesheets="@ResponsiveButtons.css" text="Disconnect" textFill="#fffefe" />
-                        <Button fx:id="bPigPlace" layoutX="545.0" layoutY="15.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="129.0" styleClass="Buttons" stylesheets="@ResponsiveButtons.css" text="Pig&amp;Place" textFill="#fffefe" />
+                        <Button fx:id="bDisconnect" layoutX="314.0" layoutY="15.0" mnemonicParsing="false" onAction="#bDisconnectOnClick" prefHeight="38.0" prefWidth="129.0" styleClass="Buttons" stylesheets="@ResponsiveButtons.css" text="Disconnect" textFill="#fffefe" />
+                        <Button fx:id="bPickPlace" layoutX="545.0" layoutY="15.0" mnemonicParsing="false" onAction="#bPickPlaceOnClick" prefHeight="38.0" prefWidth="129.0" styleClass="Buttons" stylesheets="@ResponsiveButtons.css" text="Pick&amp;Place" textFill="#fffefe" />
                         <Rectangle fill="#333333" height="133.0" layoutX="6.0" layoutY="581.0" stroke="TRANSPARENT" strokeType="INSIDE" width="736.0" />
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1866ab" height="7.0" layoutX="223.0" layoutY="560.0" stroke="TRANSPARENT" strokeType="INSIDE" width="690.0" />
                         <Ellipse fill="#4d4d4d" layoutX="232.0" layoutY="490.0" radiusX="65.0" radiusY="19.0" stroke="BLACK" strokeType="INSIDE" />

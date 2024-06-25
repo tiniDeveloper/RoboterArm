@@ -5,14 +5,12 @@ import de.developup.roboterarm.socket.ISocketMessageListiner;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -25,11 +23,8 @@ import java.util.function.UnaryOperator;
  * Verarbeitung von Ein- und Ausgabe der GUI
  */
 public class GUIController extends ISocketMessageListiner {
-    public void setClientHandler(ClientHandler clientHandler) {
-        this.clientHandler = clientHandler;
-    }
 
-    ClientHandler clientHandler;
+    private ClientHandler clientHandler;
     @FXML
     HBox mHbox;
     byte[] data;
@@ -43,9 +38,6 @@ public class GUIController extends ISocketMessageListiner {
     private double initialY;
     private double startX;
     private double startY;
-
-    @FXML
-    private  TextField fiField;
     @FXML
     Label lJoint1;
     @FXML
@@ -60,15 +52,12 @@ public class GUIController extends ISocketMessageListiner {
     private TextField hField;
     @FXML
     private TextField phiField;
-
     @FXML
-    private Button bGoHome;
-    @FXML
-    private Button bMoveTo;
+    private TextArea statusArea;
     @FXML
     private Button bDisconnect;
     @FXML
-    private Button bPigPlace;
+    private Button bPickPlace;
 
     /**
      * Konstruktor für die GUIController-Klasse.
@@ -78,14 +67,18 @@ public class GUIController extends ISocketMessageListiner {
         data = new byte[9];
     }
 
+    public static class InvalidParameterException extends Exception {
+        public InvalidParameterException(String message) {
+            super(message);
+        }
+    }
+
     /**
      * Event-Handler für den "go Home" Button.
      * Sendet den Befehl zum Zurückfahren an den Server.
-     *
-     * @param event ActionEvent ausgelöst durch Button-Klick
      */
     @FXML
-    void bGoHomeOnClick(ActionEvent event) {
+    void bGoHomeOnClick() {
         data[0]=(byte) 0x09;
         clientHandler.sendAndWaitForResponse(data);
     }
@@ -97,22 +90,34 @@ public class GUIController extends ISocketMessageListiner {
     @FXML
     void onbMoveToClick(){
         data[0]= (byte) 0x02;
-        int r = Integer.parseInt(rField.getText());
-        int h= Integer.parseInt(hField.getText());
-        int phi = Integer.parseInt(phiField.getText());
-        data[1]= (byte) (r&0xff);
-        data[2]= (byte) ((r>>8)&0xff);
-        data[3]= (byte) (h&0xff);
-        data[4]= (byte) ((h>>8)&0xff);
-        data[5]= (byte) (phi&0xff);
-        data[6]= (byte) ((phi>>8)&0xff);
-        clientHandler.sendAndWaitForResponse(data);
-        int reconstructed = (data[1]&0xff)+((data[2]&0xff)<<8);
-        if (reconstructed > 32767) {
-            reconstructed -= 65536; // Subtract 2^16 to get the correct negative value
+
+        try {
+            int r = Integer.parseInt(rField.getText());
+            int h= Integer.parseInt(hField.getText());
+            int phi = Integer.parseInt(phiField.getText());
+            if(checkInputs(r,h, phi)){
+                data[1]= (byte) (r&0xff);
+                data[2]= (byte) ((r>>8)&0xff);
+                data[3]= (byte) (h&0xff);
+                data[4]= (byte) ((h>>8)&0xff);
+                data[5]= (byte) (phi&0xff);
+                data[6]= (byte) ((phi>>8)&0xff);
+            }
+        } catch (InvalidParameterException e) {
+            statusArea.setText(e.getMessage()+statusArea.getText());
+            statusArea.setPrefColumnCount(5);
+        } catch (NumberFormatException e) {
+            statusArea.setText("bitte geben Sie eine gültigen Nummer ein: "+e.getMessage()+"\n"+statusArea.getText());
         }
 
-        System.out.println("Data: "+reconstructed );
+
+        clientHandler.sendAndWaitForResponse(data);
+//        int reconstructed = (data[1]&0xff)+((data[2]&0xff)<<8);
+//        if (reconstructed > 32767) {
+//            reconstructed -= 65536; // Subtract 2^16 to get the correct negative value
+//        }
+//
+//        System.out.println("Data: "+reconstructed );
 
         //lJoint1.setText(String.valueOf((incommengByteArray[1]&0xff)+((incommengByteArray[2]&0xff)<<8)));
         //lJoint2.setText(String.valueOf((incommengByteArray[3]&0xff)+((incommengByteArray[4]&0xff)<<8)));
@@ -123,6 +128,16 @@ public class GUIController extends ISocketMessageListiner {
 
         //System.out.println("rField: "+ data[0]);
         //clientHandler.sendAndWaitForResponse(this.data);
+    }
+    private boolean checkInputs(int r,int h, int phi) throws InvalidParameterException {
+        double magnet_offset = 65 - 34;
+        if (r <= 0 || h <= 0) throw new InvalidParameterException("Die Werte für 'r' und 'h' müssen positiv sein."+"\n");
+        double hypotenuse = Math.sqrt(r * r + (h - magnet_offset) * (h - magnet_offset));
+
+        if (hypotenuse == 0) throw new InvalidParameterException("Die Hypotenuse darf nicht Null sein."+"\n");
+        if(phi <-90||phi>90)
+            throw new InvalidParameterException("Der Winkel Phi soll im Breich von -90 bis 90 grad liegen."+"\n");
+        return true;
     }
 
     /**
@@ -163,40 +178,37 @@ public class GUIController extends ISocketMessageListiner {
                 xyCircle.setLayoutX(outer.getLayoutX() + radius * Math.cos(angle));
                 xyCircle.setLayoutY(outer.getLayoutY() + radius * Math.sin(angle));
             }
-            fiField.setText(String.valueOf(offsetX));
-            rField.setText(String.valueOf(offsetY));
         });
         xyCircle.setOnMouseReleased(event -> {
             xyCircle.setLayoutX(startX);
             xyCircle.setLayoutY(startY);
         });
+    }
 
-        bDisconnect.setOnMouseClicked(event -> {
-            //data[0]= (byte) 0x08;
-            //clientHandler.sendAndWaitForResponse(data);
-            try {
-                clientHandler.closeConnection();
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-            }
+    @FXML
+    void bPickPlaceOnClick() {
+        data[0]=(byte) 0x07;
+        clientHandler.sendAndWaitForResponse(data);
+    }
 
-            FXMLLoader initPaneloader = new FXMLLoader(getClass().getResource("/de/developup/roboterarm/gui/Init_Fanster.fxml"));
-            try {
-                Scene InitScene = new Scene(initPaneloader.load(), 1280, 720);
-                Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
 
-                primaryStage.setScene(InitScene);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+    @FXML
+    void bDisconnectOnClick(Event event) {
+        try {
+            clientHandler.closeConnection();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
 
-        bPigPlace.setOnMouseClicked(mouseEvent -> {
-            data[0]=(byte) 0x07;
-            clientHandler.sendAndWaitForResponse(data);
-        });
+        FXMLLoader initPaneloader = new FXMLLoader(getClass().getResource("/de/developup/roboterarm/gui/Init_Fanster.fxml"));
+        try {
+            Scene InitScene = new Scene(initPaneloader.load(), 1280, 720);
+            Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
 
-        //Platform.runLater(() -> onConnecctionClosed("Please connect to the server!"));
+            primaryStage.setScene(InitScene);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -223,19 +235,14 @@ public class GUIController extends ISocketMessageListiner {
                 lJoint2.setText(String.valueOf((incommengByteArray[3]&0xff)+((incommengByteArray[4]&0xff)<<8)));
                 lJoint3.setText(String.valueOf((incommengByteArray[5]&0xff)+((incommengByteArray[6]&0xff)<<8)));
                 lRotation.setText(String.valueOf((incommengByteArray[7]&0xff)+((incommengByteArray[8]&0xff)<<8)));
-                System.out.println("Fehlercode "+ incommengByteArray[0]);
+                System.out.println("Message-code: "+ incommengByteArray[0]);
                 //data[0]= (byte) 0x19;
                 //clientHandler.sendAndWaitForResponse(data);
                 break;
-            case 0x13:
-                System.out.println("Unknown Byte Message13"+ incommengByteArray[0]);
-                break;
             default:
-                System.out.println("Unknown Byte Message"+ incommengByteArray[0]);
+                System.out.println("Unknown Byte Message: "+ incommengByteArray[0]);
                 break;
         }
-
-
     }
 
     /**
@@ -253,13 +260,14 @@ public class GUIController extends ISocketMessageListiner {
     /**
      * Versucht Verbindung zum Server aufzubauen nach drücken von Connect Button
      *
+     * @param host: host von dem Server zum Verbinden
+     * @param port: port des Servers
      * @return true, wenn die Verbindung erfolgreich hergestellt wurde, andernfalls false
      */
     public String connect(String host, int port) {
         String message ="";
         try {
             clientHandler= new ClientHandler(host, port, this);
-            System.out.println("hallo");
             if(clientHandler.connected){
                 message="OK";
             }

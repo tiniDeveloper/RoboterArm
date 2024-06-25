@@ -1,44 +1,45 @@
 package de.developup.roboterarm.gui;
 
 import de.developup.roboterarm.socket.ARPScanner;
-import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
+/**
+ *
+ */
 public class InitController {
     @FXML
-    private AnchorPane deviceListPane;
+    private ListView <Label> deviceListView;
     @FXML
-    ListView <Label> deviceListView;
+    private Button connectButton;
     @FXML
-    Button connectButton;
+    private Button bRefresh;
+
 
     @FXML
-    TextArea statusArea;
+    private TextArea statusArea;
 
-    String gewaehleHost;
+    private String gewaehleHost;
 
-
+    /**
+     *
+     */
     public void initialize() {
+        connectButton.setVisible(false);
         deviceListView.setOnMouseClicked(event -> {
             Label selectedItem = deviceListView.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
-                // Hier können Sie definieren, was passieren soll, wenn ein Element angeklickt wird
                 gewaehleHost=selectedItem.getText();
-                System.out.println("Geklicktes Element: " + selectedItem.getText());
+                connectButton.setVisible(true);
             }
         });
-
         deviceListView.setCellFactory(lv -> new ListCell<Label>() {
             @Override
             public void updateItem(Label item, boolean empty) {
@@ -52,36 +53,34 @@ public class InitController {
                 }
             }
         });
-
-        connectButton.setOnAction(event -> {
-            FXMLLoader fxmlLoader  = new FXMLLoader(getClass().getResource("/de/developup/roboterarm/gui/GUIFenster.fxml"));
-
-            try {
-
-                Scene guiScene = new Scene(    fxmlLoader.load(), 1280, 720);
-                GUIController guiController = fxmlLoader.getController();
-                String connectionnMessage=guiController.connect(gewaehleHost,9988);
-                if(connectionnMessage.equals("OK")){
-                    Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
-
-                    primaryStage.setScene(guiScene);
-                }else {
-                    statusArea.setText(connectionnMessage);
-                }
-
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-            }
-
-        });
-        Platform.runLater(this::filltheList);
     }
 
-    private void filltheList() {
+    @FXML
+    private void onConnectButtonClicked(Event event) {
+        FXMLLoader fxmlLoader  = new FXMLLoader(getClass().getResource("/de/developup/roboterarm/gui/GUIFenster.fxml"));
+        try {
+            Scene guiScene = new Scene(    fxmlLoader.load(), 1280, 720);
+            GUIController guiController = fxmlLoader.getController();
+            String connectionnMessage=guiController.connect(gewaehleHost,9988);
+            if(connectionnMessage.equals("OK")){
+                Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
+
+                primaryStage.setScene(guiScene);
+            }else {
+                statusArea.setText(connectionnMessage+"\n"+statusArea.getText());
+            }
+        } catch (IOException e) {
+            statusArea.setText(e.getMessage());
+        }
+    }
+
+    @FXML
+    private void onRefreshButtonClicked(Event event) {
         ArrayList<ArrayList<String>> devices= ARPScanner.showDevices();
-        for (ArrayList device : devices) {
+        deviceListView.getItems().clear();
+        for (ArrayList<String> device : devices) {
             Label l= new Label();
-            l.setText(device.get(0).toString());
+            l.setText(device.get(0));
             deviceListView.getItems().add(l);
         }
     }

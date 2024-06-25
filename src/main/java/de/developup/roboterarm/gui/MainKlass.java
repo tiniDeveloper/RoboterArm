@@ -23,7 +23,7 @@ public class MainKlass extends Application  {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader initPaneloader = new FXMLLoader(getClass().getResource("/de/developup/roboterarm/gui/Init_Fanster.fxml"));
-        Scene InitScene = new Scene(initPaneloader.load(), 1280, 720);
+        Scene InitScene = new Scene(initPaneloader.load(), 732, 720);
 
         FXMLLoader fxmlLoader  = new FXMLLoader(getClass().getResource("/de/developup/roboterarm/gui/GUIFenster.fxml"));
         Scene guiScene   = new Scene(    fxmlLoader.load(), 1280, 720);

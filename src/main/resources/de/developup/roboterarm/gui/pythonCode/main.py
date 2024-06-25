@@ -132,7 +132,7 @@ class MyMessageHandler(ISocketMessageListener):
         Returns:
         bytearray: Das Byte-Array mit den empfangenen Daten.
     """
-    def getData(self, data):
+    def setData(self,befehl, data):
         phi=0
         r=0
         h=0
@@ -175,10 +175,6 @@ def main():
     """
         Einstellungen
     """
-    motor1Pins = (17,27,22)
-    motor2Pins = (24,23,22)
-    motor3Pins = ( 6, 5,22)
-    motor4Pins = (26,16,22)
 
     listiner = MyMessageHandler()
     sp = ServerPrvider(9988) #Portnumber

@@ -30,31 +30,46 @@ class RobotArm:
         
     """
     def inversChen(self,r,h):
-        link_2 = 90
-        link_1 = 80
-        magnet_offset= 65-34 #link3=65
-        hypotenuse = math.sqrt(r**2 + (h - magnet_offset)**2)
-        delta_rad = math.asin((h - magnet_offset) / hypotenuse)
-        delta_degree = math.degrees(delta_rad)
-        epsilon = math.asin(r / hypotenuse)
+        try:
+            link_2 = 90
+            link_1 = 80
+            magnet_offset= 65-34 #link3=65
+            if r <= 0 or h <= 0:
+                raise ValueError("Die Werte für 'r' und 'h' müssen positiv sein.")
 
-        joint1_rad_alpha = math.acos((link_2**2 - link_1**2 - hypotenuse**2) / (-2 * link_1 * hypotenuse))
-        joint1_rad = joint1_rad_alpha + delta_rad
+            hypotenuse = math.sqrt(r**2 + (h - magnet_offset)**2)
+            if hypotenuse == 0:
+                raise ValueError("Die Hypotenuse darf nicht Null sein.")
+            delta_rad = math.asin((h - magnet_offset) / hypotenuse)
+            delta_degree = math.degrees(delta_rad)
+            epsilon = math.asin(r / hypotenuse)
 
-        joint1_degree_alpha = math.degrees(joint1_rad_alpha)
-        joint1_degree = math.degrees(joint1_rad)
+            joint1_rad_alpha = math.acos((link_2**2 - link_1**2 - hypotenuse**2) / (-2 * link_1 * hypotenuse))
+            joint1_rad = joint1_rad_alpha + delta_rad
 
-        joint3_rad_gamma = math.acos((link_1**2 - link_2**2 - hypotenuse**2) / (-2 * link_2 * hypotenuse))
-        joint3_degree_gamma = math.degrees(joint3_rad_gamma)
+            joint1_degree_alpha = math.degrees(joint1_rad_alpha)
+            joint1_degree = math.degrees(joint1_rad)
 
-        if h < magnet_offset:
-            joint3_degree = joint3_degree_gamma + 90 - delta_degree
-        else:
-            joint3_rad = joint3_rad_gamma + epsilon
-            joint3_degree = math.degrees(joint3_rad)
+            joint3_rad_gamma = math.acos((link_1**2 - link_2**2 - hypotenuse**2) / (-2 * link_2 * hypotenuse))
+            joint3_degree_gamma = math.degrees(joint3_rad_gamma)
 
-        joint2_degree = 180 - joint1_degree_alpha - joint3_degree_gamma
-        return (joint1_degree, joint2_degree, joint3_degree)
+            if h < magnet_offset:
+                joint3_degree = joint3_degree_gamma + 90 - delta_degree
+            else:
+                joint3_rad = joint3_rad_gamma + epsilon
+                joint3_degree = math.degrees(joint3_rad)
+
+            joint2_degree = 180 - joint1_degree_alpha - joint3_degree_gamma
+            return (joint1_degree, joint2_degree, joint3_degree)
+        except ValueError as e:
+            print(f"ValueError: {e}")
+            return None
+        except ZeroDivisionError:
+            print("Fehler: Division durch Null aufgetreten.")
+            return None
+        except Exception as e:
+            print(f"Ein unerwarteter Fehler ist aufgetreten: {e}")
+            return None
 
     """
         Methode zum Start der Bewegung einer Achse zum angegebenen Winkel.
