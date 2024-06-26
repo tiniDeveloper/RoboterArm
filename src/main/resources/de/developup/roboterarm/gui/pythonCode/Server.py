@@ -51,14 +51,46 @@ class InitClient:
     def startCkient(self, listiner):
         counter=0
         while True:
-            counter=counter+1
-            data = self.conn.recv(9)
-            if not data:
-                x=bytearray(2)
+            try:
+                counter=counter+1
+                data = self.conn.recv(9)
+                data = listiner.onMessage(data)
+                self.conn.sendall(data)
+            except ConnectionResetError:
+                x=bytearray(9)
                 y=0x08
                 x[0]=y
+                y=0x01
+                x[1]= y
                 listiner.onMessage(x)
+                print("Die Verbindung wurde vom Peer zurückgesetzt.")
                 break
-            data = listiner.onMessage(data)
-            self.conn.sendall(data)
+            except TimeoutError:
+                x=bytearray(9)
+                y=0x08
+                x[0]=y
+                y=0x01
+                x[1]= y
+                listiner.onMessage(x)
+                print("Die Verbindung ist abgelaufen.")
+                break
+            except socket.error as e:
+                x=bytearray(9)
+                y=0x08
+                x[0]=y
+                y=0x01
+                x[1]= y
+                listiner.onMessage(x)
+                print(f"Ein Socket-Fehler ist aufgetreten: {e}")
+                break
+            except Exception as e:
+                x=bytearray(9)
+                y=0x08
+                x[0]=y
+                y=0x01
+                x[1]= y
+                listiner.onMessage(x)
+                print(f"Ein unerwarteter Fehler ist aufgetreten S: {e}")
+                break 
             
+

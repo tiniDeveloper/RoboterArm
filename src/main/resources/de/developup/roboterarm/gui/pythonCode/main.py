@@ -35,63 +35,44 @@ class MyMessageHandler(ISocketMessageListener):
         print(data[0])
         if data[0]==0x03:# Vorgang stoppen
             self.stoppVorgang=True
+            return self.setData(0x11,self.currentAngles)
             print("befehl")
             # stoppen
         elif data[0]==0x01:
-            print("aktuelle daten senden")
-            dataToSend[1]=self.currentAngles[1]
-            dataToSend[2]=self.currentAngles[2]
-            dataToSend[3]=self.currentAngles[3]
-            dataToSend[4]=self.currentAngles[4]
-            
-            return self.setData(0x11,dataToSend)
+            print("aktuelle daten senden")            
+            return self.setData(0x11,self.currentAngles)
             
         elif data[0]==0x02:
             #bewege zum Punkt
             print("Befehl: bewegen")
             (phi,r,h)=self.getData(data)
-            dataToSend[1]=self.currentAngles[1]
-            dataToSend[2]=self.currentAngles[2]
-            dataToSend[3]=self.currentAngles[3]
-            dataToSend[4]=self.currentAngles[4]
+            result= robotArm.moveToPos(phi,r,h)
+            if result=="OK":
+                return self.setData(0x11,self.currentAngles)
+            else :
+                return self.setData(0x12,result)
             
-            #print(self.currentAngles[3])
-            print (phi)
-            print(r)
-            print(h)
-            robotArm.moveToPos(phi,r,h)
-            
-            return self.setData(0x11,self.currentAngles)
-        elif data[0]==0x05:
+        elif data[0]==0x05:            
             print("Joistic")
 
         elif data[0]==0x07:# Pick and place
             print("Pick and Place")
             global i
             i=2
-            dataToSend[1]=self.currentAngles[1]
-            dataToSend[2]=self.currentAngles[2]
-            dataToSend[3]=self.currentAngles[3]
-            dataToSend[4]=self.currentAngles[4]
-            return self.setData(0x11,dataToSend)
+            
+            return self.setData(0x11,self.currentAngles)
 
-        elif data[0]==0x08:# Hier disconnecten
+        elif data[0]==0x08:# Hier disconnecten 
             print("disconnect")
             robotArm.goHome();
-            dataToSend[1]=self.currentAngles[1]
-            dataToSend[2]=self.currentAngles[2]
-            dataToSend[3]=self.currentAngles[3]
-            dataToSend[4]=self.currentAngles[4]
-            return self.setData(0x11,dataToSend)
+            
         elif data[0]==0x09:# go Home 
             robotArm.goHome();
-            dataToSend[1]=self.currentAngles[1]
-            dataToSend[2]=self.currentAngles[2]
-            dataToSend[3]=self.currentAngles[3]
-            dataToSend[4]=self.currentAngles[4]
-            return self.setData(0x11,dataToSend)
+            
+            return self.setData(0x11,self.currentAngles)
         else:
             print("Unknown Byte Message "+str(data[0]))
+            return self.setData(0x11,self.currentAngles)
     
     """
         Methode zum erstellen eines Byte-Array mit zu übergebenen Befehls- und Datenwerten.
