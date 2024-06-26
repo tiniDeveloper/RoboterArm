@@ -232,10 +232,10 @@ public class GUIController extends ISocketMessageListiner {
             case 0x11:// aktuelle Daten empfangen
                 System.out.println("aktuelle daten empfangen");
                 int[]x=bytesToInt(incommengByteArray);
-                lJoint1.setText(String.valueOf(x[0]));
-                lJoint2.setText(String.valueOf(x[1]));
-                lJoint3.setText(String.valueOf(x[2]));
-                lRotation.setText(String.valueOf(x[3]));
+                lRotation.setText(String.valueOf(x[0]));
+                lJoint1.setText(String.valueOf(x[1]));
+                lJoint2.setText(String.valueOf(x[2]));
+                lJoint3.setText(String.valueOf(x[3]));
 //                lJoint1.setText(String.valueOf((incommengByteArray[1]&0xff)+((incommengByteArray[2]&0xff)<<8)));
 //                lJoint2.setText(String.valueOf((incommengByteArray[3]&0xff)+((incommengByteArray[4]&0xff)<<8)));
 //                lJoint3.setText(String.valueOf((incommengByteArray[5]&0xff)+((incommengByteArray[6]&0xff)<<8)));
@@ -278,6 +278,7 @@ public class GUIController extends ISocketMessageListiner {
      */
     public String connect(String host, int port) {
         String message ="";
+
         try {
             clientHandler= new ClientHandler(host, port, this);
             if(clientHandler.connected){
@@ -296,7 +297,6 @@ public class GUIController extends ISocketMessageListiner {
             x[0]=((incommmingData[1]&0xff)+((incommmingData[2]&0xff)<<8)-65536);
         else
             x[0]=(incommmingData[1]&0xff)+((incommmingData[2]&0xff)<<8);
-
         if(((incommmingData[3]&0xff)+((incommmingData[4]&0xff)<<8)>32767))
             x[1]=((incommmingData[3]&0xff)+((incommmingData[4]&0xff)<<8)-65536);
         else
@@ -306,13 +306,10 @@ public class GUIController extends ISocketMessageListiner {
             x[2]=((incommmingData[5]&0xff)+((incommmingData[6]&0xff)<<8)-65536);
         else
             x[2]=(incommmingData[5]&0xff)+((incommmingData[6]&0xff)<<8);
-
         if(((incommmingData[7]&0xff)+((incommmingData[8]&0xff)<<8)>32767))
             x[3]=((incommmingData[7]&0xff)+((incommmingData[8]&0xff)<<8)-65536);
         else
             x[3]=(incommmingData[7]&0xff)+((incommmingData[8]&0xff)<<8);
-
-
         return x;
     }
 
