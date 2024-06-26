@@ -133,7 +133,7 @@ public class GUIController extends ISocketMessageListiner {
         //System.out.println("rField: "+ data[0]);
         //clientHandler.sendAndWaitForResponse(this.data);
     }
-    private boolean checkInputs(int r,int h, int phi) throws InvalidParameterException {
+    public boolean checkInputs(int r,int h, int phi) throws InvalidParameterException {
         double magnet_offset = 65 - 34;
         if (r <= 0 || h <= 0) throw new InvalidParameterException("Die Werte für 'r' und 'h' müssen positiv sein."+"\n");
         double hypotenuse = Math.sqrt(r * r + (h - magnet_offset) * (h - magnet_offset));
