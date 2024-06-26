@@ -243,11 +243,15 @@ public class GUIController extends ISocketMessageListiner {
                 // daten anzeigen
                 break;
             case 0x12:// nachricht melden
-                lJoint1.setText(String.valueOf((incommengByteArray[1]&0xff)+((incommengByteArray[2]&0xff)<<8)));
-                lJoint2.setText(String.valueOf((incommengByteArray[3]&0xff)+((incommengByteArray[4]&0xff)<<8)));
-                lJoint3.setText(String.valueOf((incommengByteArray[5]&0xff)+((incommengByteArray[6]&0xff)<<8)));
-                lRotation.setText(String.valueOf((incommengByteArray[7]&0xff)+((incommengByteArray[8]&0xff)<<8)));
-                System.out.println("Message-code: "+ incommengByteArray[0]);
+
+                if(incommengByteArray[1]==0x02){
+                    statusArea.setText("r und h darf nicht zu groß sein\n"+statusArea.getText());
+                }
+//                lJoint1.setText(String.valueOf((incommengByteArray[1]&0xff)+((incommengByteArray[2]&0xff)<<8)));
+//                lJoint2.setText(String.valueOf((incommengByteArray[3]&0xff)+((incommengByteArray[4]&0xff)<<8)));
+//                lJoint3.setText(String.valueOf((incommengByteArray[5]&0xff)+((incommengByteArray[6]&0xff)<<8)));
+//                lRotation.setText(String.valueOf((incommengByteArray[7]&0xff)+((incommengByteArray[8]&0xff)<<8)));
+//                System.out.println("Message-code: "+ incommengByteArray[0]);
                 //data[0]= (byte) 0x19;
                 //clientHandler.sendAndWaitForResponse(data);
                 break;
